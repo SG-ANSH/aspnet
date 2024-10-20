@@ -1,0 +1,198 @@
+To implement the same train management system using LINQ-to-SQL, follow these steps:
+
+### 1. Create the Database and Table
+
+This step is the same as before. If you haven't created the database yet, follow these steps:
+
+```sql
+CREATE DATABASE TrainMaster;
+GO
+
+USE TrainMaster;
+GO
+
+CREATE TABLE TrainInfo (
+    TrainID INT PRIMARY KEY IDENTITY(1,1),
+    TrainName VARCHAR(100) NOT NULL,
+    TrainType VARCHAR(50),
+    ArrivalTime TIME,
+    DepartureTime TIME,
+    StartLocation VARCHAR(100),
+    EndLocation VARCHAR(100)
+);
+GO
+```
+
+### 2. Create LINQ-to-SQL Classes
+
+1. **Add LINQ-to-SQL Class to Your Project:**
+
+   - In your ASP.NET Web Application project, right-click the project in the Solution Explorer, choose **Add** -> **New Item**.
+   - Select **LINQ to SQL Classes** from the list and name it `TrainMasterDataContext.dbml`.
+   - Drag and drop the `TrainInfo` table from the Server Explorer to the `TrainMasterDataContext.dbml` designer surface. This will generate the LINQ-to-SQL classes.
+
+### 3. Create ASP.NET Web Application
+
+#### 3.1. Create the `traindata.aspx` Web Page
+
+This page remains the same as in the previous implementation:
+
+```aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="traindata.aspx.cs" Inherits="YourNamespace.traindata" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Train Data Management</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h2>Train Data Management</h2>
+            <asp:Label ID="Label1" runat="server" Text="Train ID"></asp:Label>
+            <asp:TextBox ID="txtTrainID" runat="server"></asp:TextBox>
+            <br />
+            <asp:Label ID="Label2" runat="server" Text="Train Name"></asp:Label>
+            <asp:TextBox ID="txtTrainName" runat="server"></asp:TextBox>
+            <br />
+            <asp:Label ID="Label3" runat="server" Text="Train Type"></asp:Label>
+            <asp:TextBox ID="txtTrainType" runat="server"></asp:TextBox>
+            <br />
+            <asp:Label ID="Label4" runat="server" Text="Arrival Time"></asp:Label>
+            <asp:TextBox ID="txtArrivalTime" runat="server"></asp:TextBox>
+            <br />
+            <asp:Label ID="Label5" runat="server" Text="Departure Time"></asp:Label>
+            <asp:TextBox ID="txtDepartureTime" runat="server"></asp:TextBox>
+            <br />
+            <asp:Label ID="Label6" runat="server" Text="Start Location"></asp:Label>
+            <asp:TextBox ID="txtStartLocation" runat="server"></asp:TextBox>
+            <br />
+            <asp:Label ID="Label7" runat="server" Text="End Location"></asp:Label>
+            <asp:TextBox ID="txtEndLocation" runat="server"></asp:TextBox>
+            <br />
+            <asp:Button ID="btnInsert" runat="server" Text="Insert" OnClick="btnInsert_Click" />
+            <asp:Button ID="btnUpdate" runat="server" Text="Update" OnClick="btnUpdate_Click" />
+            <asp:Button ID="btnDelete" runat="server" Text="Delete" OnClick="btnDelete_Click" />
+            <asp:Button ID="btnSearch" runat="server" Text="Search" OnClick="btnSearch_Click" />
+            <br /><br />
+            <asp:GridView ID="gvTrains" runat="server" AutoGenerateColumns="True"></asp:GridView>
+        </div>
+    </form>
+</body>
+</html>
+```
+
+#### 3.2. Code Behind (`traindata.aspx.cs`)
+
+In the code-behind file (`traindata.aspx.cs`), implement the logic using LINQ-to-SQL:
+
+```csharp
+using System;
+using System.Linq;
+
+namespace YourNamespace
+{
+    public partial class traindata : System.Web.UI.Page
+    {
+        private TrainMasterDataContext db = new TrainMasterDataContext();
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                BindGridView();
+            }
+        }
+
+        protected void btnInsert_Click(object sender, EventArgs e)
+        {
+            var train = new TrainInfo
+            {
+                TrainName = txtTrainName.Text,
+                TrainType = txtTrainType.Text,
+                ArrivalTime = TimeSpan.Parse(txtArrivalTime.Text),
+                DepartureTime = TimeSpan.Parse(txtDepartureTime.Text),
+                StartLocation = txtStartLocation.Text,
+                EndLocation = txtEndLocation.Text
+            };
+
+            db.TrainInfos.InsertOnSubmit(train);
+            db.SubmitChanges();
+
+            BindGridView();
+        }
+
+        protected void btnUpdate_Click(object sender, EventArgs e)
+        {
+            int trainId = int.Parse(txtTrainID.Text);
+            var train = db.TrainInfos.SingleOrDefault(t => t.TrainID == trainId);
+
+            if (train != null)
+            {
+                train.TrainName = txtTrainName.Text;
+                train.TrainType = txtTrainType.Text;
+                train.ArrivalTime = TimeSpan.Parse(txtArrivalTime.Text);
+                train.DepartureTime = TimeSpan.Parse(txtDepartureTime.Text);
+                train.StartLocation = txtStartLocation.Text;
+                train.EndLocation = txtEndLocation.Text;
+
+                db.SubmitChanges();
+            }
+
+            BindGridView();
+        }
+
+        protected void btnDelete_Click(object sender, EventArgs e)
+        {
+            int trainId = int.Parse(txtTrainID.Text);
+            var train = db.TrainInfos.SingleOrDefault(t => t.TrainID == trainId);
+
+            if (train != null)
+            {
+                db.TrainInfos.DeleteOnSubmit(train);
+                db.SubmitChanges();
+            }
+
+            BindGridView();
+        }
+
+        protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            int? trainId = string.IsNullOrEmpty(txtTrainID.Text) ? (int?)null : int.Parse(txtTrainID.Text);
+            var trains = from t in db.TrainInfos
+                         where !trainId.HasValue || t.TrainID == trainId.Value
+                         select t;
+
+            gvTrains.DataSource = trains.ToList();
+            gvTrains.DataBind();
+        }
+
+        private void BindGridView()
+        {
+            var trains = from t in db.TrainInfos
+                         select t;
+
+            gvTrains.DataSource = trains.ToList();
+            gvTrains.DataBind();
+        }
+    }
+}
+```
+
+### 4. Configure the Web.Config for the Connection String
+
+Add the connection string to your `web.config` file:
+
+```xml
+<configuration>
+  <connectionStrings>
+    <add name="TrainMasterConnectionString" connectionString="Data Source=YOUR_SERVER_NAME;Initial Catalog=TrainMaster;Integrated Security=True" providerName="System.Data.SqlClient"/>
+  </connectionStrings>
+</configuration>
+```
+
+### 5. Run the Application
+
+Now, you can run the application in Visual Studio. The web page `traindata.aspx` will allow you to perform CRUD operations on the train information using LINQ-to-SQL.
+
+This approach uses LINQ-to-SQL to interact with the database, leveraging the advantages of type safety, easy query composition, and reduced boilerplate code.
