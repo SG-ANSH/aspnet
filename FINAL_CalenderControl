@@ -1,0 +1,67 @@
+default.aspx
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="CalenderControl._Default" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Calendar Navigation Example</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
+            <!-- TextBox to hold the selected date -->
+            <asp:TextBox ID="txtSelectedDate" runat="server"></asp:TextBox>
+
+            <!-- Calendar Extender control -->
+            <ajaxToolkit:CalendarExtender ID="CalendarExtender1" 
+                                           runat="server" 
+                                           TargetControlID="txtSelectedDate" 
+                                           Format="dd/MM/yyyy" 
+                                           OnClientShown="onCalendarShown">
+            </ajaxToolkit:CalendarExtender>
+
+            <!-- Label to display the selected date -->
+            <asp:Label ID="lblSelectedDate" runat="server" Text="Selected Date:"></asp:Label>
+
+            <br /><br />
+
+            <!-- Button to postback the selected date -->
+            <asp:Button ID="btnSubmit" runat="server" Text="Submit" OnClick="btnSubmit_Click" />
+        </div>
+
+        <script type="text/javascript">
+            // You can add client-side script here to handle events like calendar shown, date selection, etc.
+            function onCalendarShown(sender, args) {
+                // This event is triggered when the calendar is shown
+            }
+        </script>
+    </form>
+</body>
+</html>
+
+----------------------------------------------------------------------------------------
+
+default.aspx.cs
+
+using System;
+
+namespace CalenderControl
+{
+    public partial class _Default : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            // Display the selected date in the label
+            lblSelectedDate.Text = "Selected Date: " + txtSelectedDate.Text;
+        }
+    }
+}
