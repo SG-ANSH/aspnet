@@ -1,0 +1,125 @@
+Practical 15: Create a Calendar Navigation by using Ajax Calendar Extender control ,in which user can Navigate Year , Month and select date from the Calendar control.
+
+Create a new Project.
+
+ 1. Web.config
+Make sure you have the AJAX Control Toolkit referenced in your project. If it's not already installed, you can install it via NuGet Package Manager using the following command:
+
+Install-Package AjaxControlToolkit
+
+
+Now, configure the web application to support AJAX.
+
+ Web.config
+xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <connectionStrings>
+    <!-- Connection strings if needed -->
+  </connectionStrings>
+  <system.web>
+    <compilation debug="true" targetFramework="4.7.2" />
+    <httpRuntime targetFramework="4.7.2" />
+    <pages>
+      <controls>
+        <add tagPrefix="ajaxToolkit" namespace="AjaxControlToolkit" assembly="AjaxControlToolkit" />
+      </controls>
+    </pages>
+  </system.web>
+</configuration>
+
+
+ 2. Default.aspx
+This is the main file where you'll create the UI for the calendar control using CalendarExtender. You’ll also include the necessary ScriptManager to support AJAX in ASP.NET.
+
+ Default.aspx
+html
+<%@ Page Language="C" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="Default" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>AJAX Calendar Extender Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .calendar-container {
+            margin: 20px;
+        }
+        input[type="text"] {
+            padding: 5px;
+            font-size: 14px;
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
+        <div class="calendar-container">
+            <h2>Select a Date:</h2>
+            <asp:TextBox ID="txtDate" runat="server" CssClass="date-picker"></asp:TextBox>
+            <ajaxToolkit:CalendarExtender ID="CalendarExtender1" runat="server" TargetControlID="txtDate"
+                Format="MM/dd/yyyy" PopupButtonID="imgCalendar" StartDate="01/01/2000" EndDate="12/31/2030"
+                OnClientShown="onCalendarShown" OnClientHidden="onCalendarHidden">
+            </ajaxToolkit:CalendarExtender>
+            <asp:ImageButton ID="imgCalendar" runat="server" ImageUrl="~/calendar.png" />
+        </div>
+
+        <script type="text/javascript">
+            function onCalendarShown(sender, args) {
+                console.log("Calendar shown.");
+            }
+            function onCalendarHidden(sender, args) {
+                console.log("Calendar hidden.");
+            }
+        </script>
+    </form>
+</body>
+</html>
+
+
+ 3. Default.aspx.cs
+This code-behind file will handle the server-side events if needed. For this example, it contains only the basic structure. You can add more logic here if you want to capture or process the selected date.
+
+ Default.aspx.cs
+csharp
+using System;
+
+public partial class Default : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            // Perform any logic on page load
+        }
+    }
+}
+
+
+ 4. AJAX Control Toolkit Setup
+You need to make sure that you have the required AJAX Control Toolkit assembly referenced in your project. After installing it using NuGet, it will automatically handle the integration for you.
+
+ 5. Additional Images/Resources
+In this example, an ImageButton is used to trigger the calendar popup. You'll need a calendar image (for example: calendar.png). Place it in your project root or an Images folder and reference it in the ImageUrl property of the ImageButton.
+
+Example path:
+
+~/calendar.png
+
+
+ Summary of Key Components:
+1. CalendarExtender: This control is the core of the solution, and it allows for date selection via an AJAX-enhanced calendar popup.
+2. TargetControlID: Specifies the textbox where the selected date will appear.
+3. PopupButtonID: Specifies the button that will open the calendar.
+4. OnClientShown/OnClientHidden: Optional JavaScript hooks for handling client-side events when the calendar is shown or hidden.
+5. Date Range: The StartDate and EndDate properties can be set to control the date range the user can select.
+
+- CSS Styling: You can style the calendar control further via CSS if needed.
+
+
