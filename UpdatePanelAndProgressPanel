@@ -1,0 +1,131 @@
+Project Name: UpdatePanel
+
+Default.aspx
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="UpdatePanel.Default" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>UpdatePanel Example</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+        <asp:UpdateProgress ID="updProgress" runat="server" AssociatedUpdatePanelID="updPanel">
+            <ProgressTemplate>
+                <div style="background-color:lightgray; padding:10px; border:1px solid black; width:150px;">
+                    Loading, please wait...
+                </div>
+            </ProgressTemplate>
+        </asp:UpdateProgress>
+
+        <asp:UpdatePanel ID="updPanel" runat="server">
+            <ContentTemplate>
+                <asp:Button ID="btnClick" runat="server" Text="Click Me" OnClick="btnClick_Click" />
+                <br /><br />
+                <asp:Label ID="lblMessage" runat="server" Text="Message will update here"></asp:Label>
+            </ContentTemplate>
+            <Triggers>
+                <asp:AsyncPostBackTrigger ControlID="btnClick" EventName="Click" />
+            </Triggers>
+        </asp:UpdatePanel>
+
+    </form>
+</body>
+</html>
+
+-----------------------------------------------------------------------------------
+
+default.aspx.cs
+
+using System;
+using System.Threading;
+
+namespace UpdatePanel
+{
+    public partial class Default : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+        }
+
+        protected void btnClick_Click(object sender, EventArgs e)
+        {
+            // Simulate a delay to show the progress
+            Thread.Sleep(2000);
+
+            // Update the label with the current time
+            lblMessage.Text = "Updated at: " + DateTime.Now.ToString("T");
+        }
+    }
+}
+
+
+-----------------------------------------------------------------------------------
+
+default.aspx.designer.cs
+
+namespace UpdatePanel
+{
+
+
+    public partial class Default
+    {
+
+        /// <summary>
+        /// form1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// ScriptManager1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.ScriptManager ScriptManager1;
+
+        /// <summary>
+        /// updProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdateProgress updProgress;
+
+        /// <summary>
+        /// updPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel updPanel;
+
+        /// <summary>
+        /// btnClick control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnClick;
+
+        /// <summary>
+        /// lblMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMessage;
+    }
+}
